@@ -1,0 +1,102 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@3.1
+  node: circleci/node@5.0.3
+  docker: circleci/docker@2.5.0
+
+jobs:
+  build:
+    executor: docker
+    environment:
+      TERM: xterm
+    parameters:
+      environment:
+        type: string
+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: build the application
+          command: |
+            docker-compose build
+
+  test:
+    executor: docker
+    environment:
+      TERM: xterm
+    parameters:
+      environment:
+        type: string
+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: build the application
+          command: |
+            docker-compose build
+
+
+  deploy:
+    executor: docker
+    environment:
+      TERM: xterm
+    parameters:
+      environment:
+        type: string
+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: build the application
+          command: |
+            docker-compose up -d
+
+## Commit to a branch
+commit: &only_commit
+  filters:
+    branches:
+        only:
+            - /feat.*/
+            - /fix.*/
+
+## For main workflow
+only_on_main_branch: &only_on_main_branch
+  filters:
+    branches:
+      only: main
+
+workflows:
+  version: 2.1
+
+#Dev deployment
+  deploy-dev:
+    jobs:
+      - build:
+          context: dev-context
+          <<: *only_commit
+          environment: dev
+      - test:
+          context: dev-context
+          <<: *only_commit
+          environment: dev
+          requires:
+            - build
+      - deploy:
+          context: dev-context
+          <<: *only_commit
+          environment: dev
+          requires:
+            - test
+
+
+
+
+
+
