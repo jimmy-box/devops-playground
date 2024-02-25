@@ -5,7 +5,8 @@ orbs:
 
 jobs:
   build:
-    executor: docker/docker
+    docker:
+      - image: cimg/base:2022.09
     environment:
       TERM: xterm
     parameters:
@@ -20,10 +21,10 @@ jobs:
           name: install dependencies
           command: |
             pip install pytest
-      - run:
-          name: Start docker daemon
-          command: |
-            systemctl start docker
+      # - run:
+      #     name: Start docker daemon
+      #     command: |
+      #       systemctl start docker
       - run:
           name: build the application
           command: |
@@ -41,10 +42,10 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/project
-      - run:
-          name: Start docker daemon
-          command: |
-            systemctl start docker
+      # - run:
+      #     name: Start docker daemon
+      #     command: |
+      #       systemctl start docker
       - run:
           name: build the application
           command: |
