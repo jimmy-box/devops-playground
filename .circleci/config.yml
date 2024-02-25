@@ -36,3 +36,4 @@ workflows:
       context:
         - devops-playground-context
       stack-name: My-Web-Application
+      <<: *only_commit
