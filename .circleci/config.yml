@@ -21,10 +21,18 @@ jobs:
             --stack << parameters.stack-name >> \
             --parameter-overrides ImageTag=${CIRCLE_SHA1}            
 
+## Commit to a branch
+commit: &only_commit
+  filters:
+    branches:
+        only:
+            - /feat.*/
+            - /fix.*/
+
 workflows:
   deploy:
-    - … # build image and push to ECR with ${CIRCLE_SHA1} tag
+    #- … # build image and push to ECR with ${CIRCLE_SHA1} tag
     - deploy-cfn:
       context:
-        - aws-12345-us-east-2
-      stack-name: My-Application
+        - devops-playground-context
+      stack-name: My-Web-Application
