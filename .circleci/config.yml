@@ -29,11 +29,14 @@ commit: &only_commit
             - /feat.*/
             - /fix.*/
 
+
 workflows:
-  deploy:
-    #- … # build image and push to ECR with ${CIRCLE_SHA1} tag
-    - deploy-cfn:
-      context:
-        - devops-playground-context
-      stack-name: My-Web-Application
-      <<: *only_commit
+  version: 2
+
+#Dev deployment
+  deploy-dev:
+    jobs:
+      - deploy-cfn:
+          context: devops-playground-context
+          <<: *only_commit
+          stack-name: My-Web-Application
