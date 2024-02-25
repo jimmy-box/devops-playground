@@ -5,8 +5,7 @@ orbs:
 
 jobs:
   build:
-    docker:
-      - image: cimg/base:2022.09
+    executor: docker/docker
     environment:
       TERM: xterm
     parameters:
@@ -21,10 +20,18 @@ jobs:
           name: install dependencies
           command: |
             pip install pytest
-      # - run:
-      #     name: Start docker daemon
-      #     command: |
-      #       systemctl start docker
+      - run:
+          name: Install `docker-compose`
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Start docker daemon
+          command: |
+            systemctl start docker
       - run:
           name: build the application
           command: |
@@ -42,10 +49,10 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/project
-      # - run:
-      #     name: Start docker daemon
-      #     command: |
-      #       systemctl start docker
+      - run:
+          name: Start docker daemon
+          command: |
+            systemctl start docker
       - run:
           name: build the application
           command: |
