@@ -21,6 +21,10 @@ jobs:
           command: |
             pip install pytest
       - run:
+          name: Start docker daemon
+          command: |
+            systemctl start docker
+      - run:
           name: build the application
           command: |
             docker-compose build
