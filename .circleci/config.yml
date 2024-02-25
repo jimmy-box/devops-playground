@@ -21,7 +21,7 @@ jobs:
           command: |
             pip install pytest
       - run:
-          name: Install `docker-compose`
+          name: Install 'docker-compose'
           command: |
             curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
@@ -46,6 +46,14 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run:
+          name: Install 'docker-compose'
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
           name: build the application
           command: |
             docker-compose build
@@ -63,6 +71,14 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/project
+      - run:
+          name: Install 'docker-compose'
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - setup_remote_docker:
+          docker_layer_caching: false
       - run:
           name: build the application
           command: |
