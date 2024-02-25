@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Dev EC2 instance to test Nginx
+
+Parameters:
+  securityGroupId:
+    Type: List<AWS::EC2::SecurityGroup::Id>
+
+  publicSubnetId:
+    Type: String
+  
+    keyPairName:
+      Type: string
+      Default: test-key-pair
+
+Mappings:
+  AWSRegionToAMI:
+  # amzn-ami-2017.09.l-amazon-ecs-optimized
+  # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
+    eu-west-2:
+      AMIID: ami-0171207a7acd2a570
+
+Resources:
+  ec2Instance: 
+    Type: AWS::EC2::Instance
+    Properties:
+      BlockDeviceMappings:
+      - DeviceName: /dev/sda1
+        Ebs:
+          DeleteOnTermination: true
+          VolumeType: gp2
+          VolumeSize: 10
+          Encrypted: "true"
+      InstanceType: t2.micro
+      ImageId: !FindInMap [AWSRegionToAMI, !Ref 'AWS::Region', AMIID]
+      KeyName: devopslite-key
+      SecurityGroupIds: !Ref securityGroupId
+      SubnetId: !Ref publicSubnetId
+      Tags:
+        - Key: Name
+          Value: dev-instance
+        - Key: Env
+          Value: Dev
+      UserData:
+        Fn::Base64: 
+          !Sub |
+            #!/bin/bash -xe
+            apt update -y
+            apt install nginx -y
+Outputs:
+  Website:
+    Description: The Public DNS for the EC2 Instance
+    Value: !Sub 'http://${ec2Instance.PublicDnsName}'
