@@ -29,10 +29,6 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
-          name: Start docker daemon
-          command: |
-            systemctl start docker
-      - run:
           name: build the application
           command: |
             docker-compose build
