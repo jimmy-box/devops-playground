@@ -1,25 +1,32 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Create ECR For web"
+
+
 Parameters:
   KeyName:
-    Type: AWS::EC2::KeyPair::KeyName
+    Type: String
+    Default: test-key-pair
     Description: Name of an existing EC2 KeyPair to enable SSH access to the ECS instances.
 
-  VpcId:
-    Type: AWS::EC2::VPC::Id
+  MyVpcId:
+    Type: String
+    Default: vpc-5f285e36
     Description: Select a VPC that allows instances access to the Internet.
 
   SubnetId:
-    Type: List<AWS::EC2::Subnet::Id>
-    Description: Select at two subnets in your selected VPC.
+    Type: String
+    Default: subnet-db95f4a0
+    AllowedValues: ['subnet-db95f4a0', subnet-56f04c1b]
+    Description: Select at least two subnets in your selected VPC.
 
   DesiredCapacity:
     Type: Number
-    Default: '2'
+    Default: '1'
     Description: Number of instances to launch in your ECS cluster.
 
   MaxSize:
     Type: Number
-    Default: '3'
+    Default: '2'
     Description: Maximum number of instances that can be launched in your ECS cluster.
 
   ContainerPort:
@@ -34,9 +41,9 @@ Parameters:
     AllowedValues: [t2.micro, t2.small]
     ConstraintDescription: Please choose a valid instance type.
 
-  EcsImageUri:
-    Type: String
-    Description: "URI to the Docker image to use for app (e.g. in ECR or DockerHub)"
+  # EcsImageUri:
+  #   Type: String
+  #   Description: "URI to the Docker image to use for app (e.g. in ECR or DockerHub)"
 
   EcsImageVersion:
     Type: String
@@ -58,12 +65,12 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: ECS Security Group
-      VpcId: !Ref 'VpcId'
+      VpcId: !Ref MyVpcId
 
   EcsSecurityGroupHTTPinbound:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      GroupId: !Ref 'EcsSecurityGroup'
+      GroupId: !Ref EcsSecurityGroup
       IpProtocol: tcp
       FromPort: '80'
       ToPort: '80'
@@ -72,7 +79,7 @@ Resources:
   EcsSecurityGroupSSHinbound:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      GroupId: !Ref 'EcsSecurityGroup'
+      GroupId: !Ref EcsSecurityGroup
       IpProtocol: tcp
       FromPort: '22'
       ToPort: '22'
@@ -81,11 +88,11 @@ Resources:
   EcsSecurityGroupALBports:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      GroupId: !Ref 'EcsSecurityGroup'
+      GroupId: !Ref EcsSecurityGroup
       IpProtocol: tcp
       FromPort: '31000'
       ToPort: '61000'
-      SourceSecurityGroupId: !Ref 'EcsSecurityGroup'
+      SourceSecurityGroupId: !Ref EcsSecurityGroup
 
   CloudwatchLogsGroup:
     Type: AWS::Logs::LogGroup
@@ -94,46 +101,46 @@ Resources:
       RetentionInDays: 30
 
   MyEcrRepository: 
-  Type: AWS::ECR::Repository
-  Properties: 
-    RepositoryName: "test-webapp-repo"
-    RepositoryPolicyText: 
-      Version: "2012-10-17"
-      Statement: 
-        - 
-          Sid: AllowPushPull
-          Effect: Allow
-          Principal: 
-            AWS: 
-              - "*"
-          Action: 
-            - "ecr:GetDownloadUrlForLayer"
-            - "ecr:BatchGetImage"
-            - "ecr:BatchCheckLayerAvailability"
-            - "ecr:PutImage"
-            - "ecr:InitiateLayerUpload"
-            - "ecr:UploadLayerPart"
-            - "ecr:CompleteLayerUpload"
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: "test-webapp-repo"
+      RepositoryPolicyText: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Sid: AllowPushPull
+            Effect: Allow
+            Principal: 
+              AWS: 
+                - "*"
+            Action: 
+              - "ecr:GetDownloadUrlForLayer"
+              - "ecr:BatchGetImage"
+              - "ecr:BatchCheckLayerAvailability"
+              - "ecr:PutImage"
+              - "ecr:InitiateLayerUpload"
+              - "ecr:UploadLayerPart"
+              - "ecr:CompleteLayerUpload"
 
 
   taskdefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Sub '${AWS::StackName}-taskdef'
+      Family: !Sub "${AWS::StackName}-taskdef"
       ContainerDefinitions:
       - Name: !Sub '${AWS::StackName}-task'
         Cpu: '10'
         Essential: 'true'
-        Image: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/my-app:${ImageTag}'    #'${EcsImageUri}:${EcsImageVersion}'
+        Image: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/test-webapp-repo:${EcsImageVersion}'    #'${EcsImageUri}:${EcsImageVersion}'
         Memory: '300'
         LogConfiguration:
           LogDriver: awslogs
           Options:
-            awslogs-group: !Ref 'CloudwatchLogsGroup'
+            awslogs-group: !Ref CloudwatchLogsGroup
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: !Sub '${AWS::StackName}-logs'
         PortMappings:
-        - ContainerPort: !Ref 'ContainerPort'
+        - ContainerPort: !Ref ContainerPort
           
   # ecsalb:
   #   Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -188,11 +195,11 @@ Resources:
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      VPCZoneIdentifier: !Ref 'SubnetId'
-      LaunchConfigurationName: !Ref 'ContainerInstances'
+      VPCZoneIdentifier: [!Ref SubnetId]
+      LaunchConfigurationName: !Ref ContainerInstances
       MinSize: '1'
-      MaxSize: !Ref 'MaxSize'
-      DesiredCapacity: !Ref 'DesiredCapacity'
+      MaxSize: !Ref MaxSize
+      DesiredCapacity: !Ref DesiredCapacity
     CreationPolicy:
       ResourceSignal:
         Timeout: PT15M
@@ -219,14 +226,14 @@ Resources:
     Type: AWS::ECS::Service
     # DependsOn: ALBListener
     Properties:
-      Cluster: !Ref 'ECSCluster'
-      DesiredCount: !Ref 'DesiredCapacity'
+      Cluster: !Ref ECSCluster
+      DesiredCount: !Ref DesiredCapacity
       LoadBalancers:
       - ContainerName: !Sub '${AWS::StackName}-task'
-        ContainerPort: !Ref 'ContainerPort'
-        TargetGroupArn: !Ref 'EcsTargetGroup'
-      Role: !Ref 'ECSServiceRole'
-      TaskDefinition: !Ref 'taskdefinition'
+        ContainerPort: !Ref ContainerPort
+        #TargetGroupArn: !Ref EcsTargetGroup
+      Role: !Ref ECSServiceRole
+      TaskDefinition: !Ref taskdefinition
   ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -292,17 +299,17 @@ Resources:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Path: /
-      Roles: [!Ref 'EC2Role']
+      Roles: [!Ref EC2Role]
 
 Outputs:
   ecsservice:
-    Value: !Ref 'service'
+    Value: !Ref service
   ecscluster:
-    Value: !Ref 'ECSCluster'
+    Value: !Ref ECSCluster
   # ecsalb:
   #   Description: Your ALB DNS URL
   #   Value: !Join ['', [!GetAtt [ecsalb, DNSName]]]
   taskdef:
-    Value: !Ref 'taskdefinition'
+    Value: !Ref taskdefinition
   EcrArn:
     Value: !GetAtt MyEcrRepository.Arn

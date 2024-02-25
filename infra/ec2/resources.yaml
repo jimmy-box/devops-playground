@@ -8,9 +8,9 @@ Parameters:
   publicSubnetId:
     Type: String
   
-    keyPairName:
-      Type: string
-      Default: test-key-pair
+  keyPairName:
+    Type: String
+    Default: test-key-pair
 
 Mappings:
   AWSRegionToAMI:
@@ -32,7 +32,7 @@ Resources:
           Encrypted: "true"
       InstanceType: t2.micro
       ImageId: !FindInMap [AWSRegionToAMI, !Ref 'AWS::Region', AMIID]
-      KeyName: devopslite-key
+      KeyName: !Ref keyPairName
       SecurityGroupIds: !Ref securityGroupId
       SubnetId: !Ref publicSubnetId
       Tags:
@@ -42,7 +42,7 @@ Resources:
           Value: Dev
       UserData:
         Fn::Base64: 
-          !Sub |
+          #!Sub |
             #!/bin/bash -xe
             apt update -y
             apt install nginx -y
