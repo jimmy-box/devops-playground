@@ -31,6 +31,9 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:LZFa15CHoQCxXjAPxLdbB4pzEPk/NkVeeAEjXA0RH2A"
       - run:
           name: Deploy application
           command: |
