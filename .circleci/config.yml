@@ -19,27 +19,27 @@ jobs:
             aws cloudformation deploy \
             --template infra/ec2/resources.yaml \
             --stack << parameters.stack-name >> \
-            --parameter-overrides ImageTag=${CIRCLE_SHA1} \
             --capabilities CAPABILITY_NAMED_IAM \
             --no-fail-on-empty-changeset   
             
   deploy-app:
+    docker:
+      - image: arvindr226/alpine-ssh
     parameters:
       stack-name:
         description: Name of the CloudFormation stack
         type: string
-    executor: aws-cli/default
     steps:
       - checkout
       - aws-cli/setup
       - run:
           name: Deploy Cloudformation Template with new Docker image
           command: |
-            aws cloudformation deploy \
-            --template infra/ec2/resources.yaml \
-            --stack << parameters.stack-name >> \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --no-fail-on-empty-changeset   
+            PUBLIC_IP=$(curl ipinfo.io/ip)
+            AWS_REGION=$AWS_DEFAULT_REGION
+            EC2_USERNAME=ec2_user
+            EC2_PUBLIC_DNS=$EC2_PUBLIC_DNS
+            ssh -oStrictHostKeyChecking=no -v $USER@$DNS "./deploy.sh"
 
 ## Commit to a branch
 commit: &only_commit
