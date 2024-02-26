@@ -17,7 +17,7 @@ jobs:
           name: Deploy Cloudformation Template with new Docker image
           command: |
             aws cloudformation deploy \
-            --template infra/ecs/resources.yaml \
+            --template infra/ec2/resources.yaml \
             --stack << parameters.stack-name >> \
             --parameter-overrides ImageTag=${CIRCLE_SHA1} \
             --capabilities CAPABILITY_NAMED_IAM \
