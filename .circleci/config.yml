@@ -33,7 +33,7 @@ jobs:
       - aws-cli/setup
       - add_ssh_keys:
           fingerprints:
-            - "SHA256:O69Gv5ckRihn9ejbRXyb8I1vg517YgoKuM6BpsGaz1g"
+            - "28:50:51:d8:19:6d:e5:43:c3:91:ca:fa:0b:15:60:c1:8f:88:49:04"
       - run:
           name: Deploy application
           command: |
@@ -41,7 +41,7 @@ jobs:
             AWS_REGION=$AWS_REGION
             EC2_USERNAME=ec2_user
             EC2_PUBLIC_DNS=$EC2_PUBLIC_DNS
-            ssh -oStrictHostKeyChecking=no -v $EC2_USERNAME@$EC2_PUBLIC_DNS "./deploy.sh"
+            ssh -oStrictHostKeyChecking=no -v -i $EC2_USERNAME@$EC2_PUBLIC_DNS "./deploy.sh"
 
 ## Commit to a branch
 commit: &only_commit
