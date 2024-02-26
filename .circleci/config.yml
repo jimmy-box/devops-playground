@@ -36,10 +36,10 @@ jobs:
           name: Deploy Cloudformation Template with new Docker image
           command: |
             PUBLIC_IP=$(curl ipinfo.io/ip)
-            AWS_REGION=$AWS_DEFAULT_REGION
+            AWS_REGION=$AWS_REGION
             EC2_USERNAME=ec2_user
             EC2_PUBLIC_DNS=$EC2_PUBLIC_DNS
-            ssh -oStrictHostKeyChecking=no -v $USER@$DNS "./deploy.sh"
+            ssh -oStrictHostKeyChecking=no -v $EC2_USERNAME@$EC2_PUBLIC_DNS "./deploy.sh"
 
 ## Commit to a branch
 commit: &only_commit
@@ -67,10 +67,10 @@ workflows:
           <<: *only_commit
           stack-name: ec2-infra-stack
 
-# #Dev app
-#   deploy-app:
-#     jobs:
-#       - deploy-cfn:
-#           context: devops-playground-context
-#           <<: *only_commit
+#Dev app
+  deploy-app:
+    jobs:
+      - deploy-cfn:
+          context: devops-playground-context
+          <<: *only_commit
           
