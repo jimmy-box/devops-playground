@@ -13,7 +13,7 @@ Parameters:
   
   keyPairName:
     Type: String
-    Default: new-app-key.pemr
+    Default: new-app-key.pem
 
   publicKey:
     Type: String
