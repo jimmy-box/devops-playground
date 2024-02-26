@@ -2,8 +2,10 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Dev EC2 instance to test Nginx
 
 Parameters:
-  securityGroupId:
-    Type: List<AWS::EC2::SecurityGroup::Id>
+  MyVpcId:
+    Type: String
+    Default:
+    Description: Your VPC ID where you want to deploy the application
 
   publicSubnetId:
     Type: String
@@ -20,6 +22,39 @@ Mappings:
       AMIID: ami-0171207a7acd2a570
 
 Resources:
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EC2 Security Group
+      VpcId: !Ref MyVpcId
+
+  SecurityGroupHTTPinbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      IpProtocol: tcp
+      FromPort: '80'
+      ToPort: '80'
+      CidrIp: 0.0.0.0/0
+
+  SecurityGroupSSHinbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      IpProtocol: tcp
+      FromPort: '22'
+      ToPort: '22'
+      CidrIp: 0.0.0.0/0
+
+  EcsSecurityGroupALBports:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      IpProtocol: tcp
+      FromPort: '31000'
+      ToPort: '61000'
+      SourceSecurityGroupId: !Ref SecurityGroup
+
   ec2Instance: 
     Type: AWS::EC2::Instance
     Properties:
@@ -44,8 +79,14 @@ Resources:
         Fn::Base64: 
           #!Sub |
             #!/bin/bash -xe
-            apt update -y
-            apt install nginx -y
+            amazon-linux-extras install docker
+            service docker start
+            yum update -y
+            yum install  -y git 
+            curl sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
+            docker-compose version
+
 Outputs:
   Website:
     Description: The Public DNS for the EC2 Instance
