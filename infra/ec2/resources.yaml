@@ -16,10 +16,10 @@ Parameters:
 
 Mappings:
   AWSRegionToAMI:
-  # amzn-ami-2017.09.l-amazon-ecs-optimized
+  # Ensure you supply a valid AWS Linux 2 ami in eu-west-2 
   # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
     eu-west-2:
-      AMIID: ami-0171207a7acd2a570
+      AMIID: ami-0f8f99aa5fa000138
 
 Resources:
   SecurityGroup:
