@@ -13,7 +13,7 @@ Parameters:
   
   keyPairName:
     Type: String
-    Default: new-app-key
+    Default: test-key-pair
 
 
 Mappings:
@@ -77,17 +77,17 @@ Resources:
           Value: dev-instance
         - Key: Env
           Value: Dev
-      # UserData:
-      #   Fn::Base64: 
-      #     !Sub |
-      #         #!/bin/bash -ex
-      #         amazon-linux-extras install docker
-      #         yum update -y
-      #         service docker start
-      #         yum install git -y
-      #         curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-      #         chmod +x /usr/local/bin/docker-compose
-      #         docker-compose version
+      UserData:
+        Fn::Base64: 
+          !Sub |
+              #!/bin/bash -ex
+              amazon-linux-extras install docker
+              yum update -y
+              service docker start
+              yum install git -y
+              curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+              chmod +x /usr/local/bin/docker-compose
+              docker-compose version
 
 Outputs:
   Website:
