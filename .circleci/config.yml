@@ -23,17 +23,16 @@ jobs:
             --no-fail-on-empty-changeset   
             
   deploy-app:
-    docker:
-      - image: arvindr226/alpine-ssh
     # parameters:
     #   stack-name:
     #     description: Name of the CloudFormation stack
     #     type: string
+    executor: aws-cli/default
     steps:
       - checkout
       - aws-cli/setup
       - run:
-          name: Deploy Cloudformation Template with new Docker image
+          name: Deploy application
           command: |
             PUBLIC_IP=$(curl ipinfo.io/ip)
             AWS_REGION=$AWS_REGION
