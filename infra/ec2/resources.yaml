@@ -13,12 +13,8 @@ Parameters:
   
   keyPairName:
     Type: String
-    Default: new-app-key.pem
+    Default: new-app-key
 
-  publicKey:
-    Type: String
-    Default: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEp4L8uvqIHeEQBXMChMO2zJFET9Vg8BjQZLD7mF4N7r robinoglobal.com"
-    Description: The public key for ssh authentication
 
 Mappings:
   AWSRegionToAMI:
