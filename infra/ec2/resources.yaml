@@ -13,7 +13,7 @@ Parameters:
   
   keyPairName:
     Type: String
-    Default: test-key-pair
+    Default: new-app-key.pemr
 
   publicKey:
     Type: String
