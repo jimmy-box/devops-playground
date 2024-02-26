@@ -25,10 +25,10 @@ jobs:
   deploy-app:
     docker:
       - image: arvindr226/alpine-ssh
-    parameters:
-      stack-name:
-        description: Name of the CloudFormation stack
-        type: string
+    # parameters:
+    #   stack-name:
+    #     description: Name of the CloudFormation stack
+    #     type: string
     steps:
       - checkout
       - aws-cli/setup
