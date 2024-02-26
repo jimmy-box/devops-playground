@@ -21,7 +21,25 @@ jobs:
             --stack << parameters.stack-name >> \
             --parameter-overrides ImageTag=${CIRCLE_SHA1} \
             --capabilities CAPABILITY_NAMED_IAM \
-            --no-fail-on-empty-changeset        
+            --no-fail-on-empty-changeset   
+            
+  deploy-app:
+    parameters:
+      stack-name:
+        description: Name of the CloudFormation stack
+        type: string
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run:
+          name: Deploy Cloudformation Template with new Docker image
+          command: |
+            aws cloudformation deploy \
+            --template infra/ec2/resources.yaml \
+            --stack << parameters.stack-name >> \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --no-fail-on-empty-changeset   
 
 ## Commit to a branch
 commit: &only_commit
@@ -31,23 +49,28 @@ commit: &only_commit
             - /feat.*/
             - /fix.*/
 
+## Commit to a branch
+only_on_infra_branch: &only_infra_commit
+  filters:
+    branches:
+        only:
+            - infra
 
 workflows:
   version: 2
 
-#Dev deployment
-  deploy-dev:
+#Dev infra
+  deploy-infra:
     jobs:
       - deploy-cfn:
           context: devops-playground-context
           <<: *only_commit
-          stack-name: My-Web-Application
-      - aws-ecr/build-and-push-image:
-          repo: "${AWS_RESOURCE_NAME_PREFIX}"
-          tag: "${CIRCLE_SHA1}"
-      - aws-ecs/deploy-service-update:
-          requires:
-            - aws-ecr/build-and-push-image # only run this job once aws-ecr/build-and-push-image has completed
-          family: "${AWS_RESOURCE_NAME_PREFIX}-service"
-          cluster: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
-          container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-service,tag=${CIRCLE_SHA1}"
+          stack-name: ec2-infra-stack
+
+# #Dev app
+#   deploy-app:
+#     jobs:
+#       - deploy-cfn:
+#           context: devops-playground-context
+#           <<: *only_commit
+          
