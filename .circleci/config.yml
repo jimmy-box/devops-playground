@@ -68,9 +68,9 @@ workflows:
           stack-name: ec2-infra-stack
 
 #Dev app
-  deploy-app:
+  deploy-application:
     jobs:
-      - deploy-cfn:
+      - deploy-app:
           context: devops-playground-context
           <<: *only_commit
           
