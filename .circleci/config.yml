@@ -41,7 +41,8 @@ jobs:
             AWS_REGION=$AWS_REGION
             EC2_USERNAME=ec2_user
             EC2_PUBLIC_DNS=$EC2_PUBLIC_DNS
-            ssh -oStrictHostKeyChecking=no -v -i $EC2_USERNAME@$EC2_PUBLIC_DNS "./deploy.sh"
+            ssh -oStrictHostKeyChecking=no -v -i $EC2_USERNAME@$EC2_PUBLIC_DNS \
+            docker-pompose up -d 
 
 ## Commit to a branch
 commit: &only_commit
