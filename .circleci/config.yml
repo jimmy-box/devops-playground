@@ -1,0 +1,108 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@1.4.0
+
+jobs:
+  build-and-test:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run: pip install cfn-lint
+      - run:
+          name: validate CF template
+          command: |
+            cfn-lint myproject/infra/ec2/resources.yaml
+      # - run:
+      #     name: build app
+      #     command: |
+      #       cd myproject
+      #       docker-compose build
+    
+  deploy-cfn:
+    parameters:
+      stack-name:
+        description: Name of the CloudFormation stack
+        type: string
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run:
+          name: Deploy Cloudformation Template
+          command: |
+            aws cloudformation deploy \
+            --template myproject/infra/ec2/resources.yaml \
+            --stack << parameters.stack-name >> \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --no-fail-on-empty-changeset   
+            
+  deploy-app:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run:
+          name: Deploy application
+          command: |
+            PUBLIC_IP=$(curl ipinfo.io/ip)
+            echo "$SSH_KEY" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            echo "I am here"
+            AWS_REGION=$AWS_REGION
+            EC2_USERNAME=ubuntu
+            EC2_PUBLIC_DNS=$EC2_PUBLIC_DNS
+            chmod 757 myproject/deploy.sh
+            echo "I am attempting to copy"
+            scp -i ~/.ssh/id_rsa -oStrictHostKeyChecking=no -r /home/circleci/project/myproject  $EC2_USERNAME@$EC2_PUBLIC_DNS:/home/ubuntu
+            echo "SSH to the server and deploy................ "
+            ssh -i ~/.ssh/id_rsa -oStrictHostKeyChecking=no -v $EC2_USERNAME@$EC2_PUBLIC_DNS \
+            echo "I am in the ubuntu server"
+            cd myproject
+            chmod 757 deploy.sh
+            ./deploy.sh
+
+## Commit to a branch
+commit: &only_commit
+  filters:
+    branches:
+        only:
+            - /feat.*/
+            - /fix.*/
+
+## Commit to a branch
+only_on_infra_branch: &only_infra_commit
+  filters:
+    branches:
+        only:
+            - infra
+
+workflows:
+  version: 2
+
+#Dev infra
+  deploy-infra:
+    jobs:
+      - build-and-test:
+          context: devops-playground-context
+          <<: *only_infra_commit
+      - deploy-cfn:
+          context: devops-playground-context
+          <<: *only_infra_commit
+          stack-name: ec2-infra-stack
+          requires:
+            - build-and-test
+
+#Dev app
+  deploy-application:
+    jobs:
+      - build-and-test:
+          context: devops-playground-context
+          <<: *only_commit
+      - deploy-app:
+          context: devops-playground-context
+          <<: *only_commit
+          requires:
+            - build-and-test
+          
