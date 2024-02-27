@@ -13,7 +13,7 @@ Parameters:
   
   keyPairName:
     Type: String
-    Default: test-key-pair
+    Default: "ec2-keypair"
 
 
 Mappings:
@@ -21,7 +21,7 @@ Mappings:
   # Ensure you supply a valid AWS Linux 2 ami in eu-west-2 
   # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
     eu-west-2:
-      AMIID: ami-09abb6457c770f890  #ami-0f8f99aa5fa000138
+      AMIID: ami-0ff1c68c6e837b183 #ami-09abb6457c770f890  #ami-0f8f99aa5fa000138
 
 Resources:
   SecurityGroup:
@@ -61,7 +61,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       BlockDeviceMappings:
-      - DeviceName: /dev/xvda
+      - DeviceName: /dev/sda1
         Ebs:
           DeleteOnTermination: true
           VolumeType: gp2
@@ -77,17 +77,14 @@ Resources:
           Value: dev-instance
         - Key: Env
           Value: Dev
-      UserData:
-        Fn::Base64: 
-          !Sub |
-              #!/bin/bash -ex
-              amazon-linux-extras install docker
-              yum update -y
-              service docker start
-              yum install git -y
-              curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-              chmod +x /usr/local/bin/docker-compose
-              docker-compose version
+      # UserData:
+      #   Fn::Base64: 
+      #     !Sub |
+      #         #!/bin/bash -ex
+      #         apt update -y
+      #         apt  install docker.io
+      #         apt install git -y
+      #         apt install docker-compose
 
 Outputs:
   Website:
