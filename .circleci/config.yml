@@ -14,7 +14,7 @@ jobs:
       - checkout
       - aws-cli/setup
       - run:
-          name: Deploy Cloudformation Template with new Docker image
+          name: Deploy linux2 ec2 instance 
           command: |
             aws cloudformation deploy \
             --template infra/ec2/resources.yaml \

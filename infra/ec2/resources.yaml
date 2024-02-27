@@ -21,7 +21,7 @@ Mappings:
   # Ensure you supply a valid AWS Linux 2 ami in eu-west-2 
   # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
     eu-west-2:
-      AMIID: ami-09abb6457c770f890  #ami-0f8f99aa5fa000138
+      AMIID: ami-0ff1c68c6e837b183 #ami-09abb6457c770f890  #ami-0f8f99aa5fa000138
 
 Resources:
   SecurityGroup:
@@ -81,11 +81,11 @@ Resources:
         Fn::Base64: 
           !Sub |
               #!/bin/bash -ex
-              amazon-linux-extras install docker
-              yum update -y
-              service docker start
-              yum install git -y
-              curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+              apt update -y
+              #amazon-linux-extras install docker
+              apt install -y docker-ce
+              apt install git -y
+              curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
               chmod +x /usr/local/bin/docker-compose
               docker-compose version
 
