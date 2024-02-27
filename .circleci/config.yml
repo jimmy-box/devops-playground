@@ -43,6 +43,7 @@ jobs:
             EC2_USERNAME=ubuntu
             EC2_PUBLIC_DNS=$EC2_PUBLIC_DNS
             chmod 400 deploy.sh
+            ls -al 
             echo "Attempting ssh connection "
             ssh -i ~/.ssh/id_rsa -v $EC2_USERNAME@$EC2_PUBLIC_DNS "./deploy.sh"
             #ssh -i oStrictHostKeyChecking=no -v $EC2_USERNAME@$EC2_PUBLIC_DNS "./deploy.sh"
