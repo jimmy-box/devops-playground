@@ -95,6 +95,7 @@ workflows:
 #Dev app
   deploy-application:
     jobs:
+      - build-and-test
       - deploy-app:
           context: devops-playground-context
           <<: *only_commit
