@@ -6,7 +6,7 @@ set -e
 sudo apt update -y
 sudo apt install nginx -y
 sudo apt install docker-compose
-sudo apt-get install docker-compose-plugin
+sudo apt-get install docker-compose-plugin -y
 sudo su - 
 cd /home/ubuntu/myproject
 
