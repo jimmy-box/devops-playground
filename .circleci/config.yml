@@ -33,7 +33,7 @@ jobs:
       - aws-cli/setup
       - add_ssh_keys:
           fingerprints:
-            - "26:fd:e7:cf:56:a1:ac:37:7e:80:9c:94:e9:bc:b7:7a:5f:1f:77:8f"
+            - "SHA256:4qDTzK5qBO/f99nxL/tHJYhZ2+MeEDCgRnVRBY6P0jc"
       - run:
           name: Deploy application
           command: |
