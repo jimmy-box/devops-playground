@@ -29,7 +29,7 @@ jobs:
       - checkout
       - aws-cli/setup
       - run:
-          name: Deploy Cloudformation Template with new Docker image
+          name: Deploy Cloudformation Template
           command: |
             aws cloudformation deploy \
             --template myproject/infra/ec2/resources.yaml \
@@ -84,7 +84,9 @@ workflows:
 #Dev infra
   deploy-infra:
     jobs:
-      - build-and-test
+      - build-and-test:
+          context: devops-playground-context
+          <<: *only_infra_commit
       - deploy-cfn:
           context: devops-playground-context
           <<: *only_infra_commit
@@ -95,7 +97,9 @@ workflows:
 #Dev app
   deploy-application:
     jobs:
-      - build-and-test
+      - build-and-test:
+          context: devops-playground-context
+          <<: *only_commit
       - deploy-app:
           context: devops-playground-context
           <<: *only_commit
