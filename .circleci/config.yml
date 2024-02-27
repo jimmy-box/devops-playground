@@ -47,7 +47,7 @@ jobs:
             pwd 
             ls project
             echo "I am attempting to copy"
-            scp -i ~/.ssh/id_rsa -oStrictHostKeyChecking=no -r project  $EC2_USERNAME@$EC2_PUBLIC_DNS:/home/ubuntu
+            scp -i ~/.ssh/id_rsa -oStrictHostKeyChecking=no -r /project  $EC2_USERNAME@$EC2_PUBLIC_DNS:/home/ubuntu
             echo "Attempting ssh connection "
             ssh -i ~/.ssh/id_rsa -v $EC2_USERNAME@$EC2_PUBLIC_DNS "./deploy.sh"
             #ssh -i oStrictHostKeyChecking=no -v $EC2_USERNAME@$EC2_PUBLIC_DNS "./project/deploy.sh"
