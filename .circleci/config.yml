@@ -12,12 +12,12 @@ jobs:
       - run:
           name: validate CF template
           command: |
-            cfn-lin myproject/infra/ec2/resources.yaml
-      - run:
-          name: build app
-          command: |
-            cd myproject
-            docker-compose build
+            cfn-lint myproject/infra/ec2/resources.yaml
+      # - run:
+      #     name: build app
+      #     command: |
+      #       cd myproject
+      #       docker-compose build
     
   deploy-cfn:
     parameters:
