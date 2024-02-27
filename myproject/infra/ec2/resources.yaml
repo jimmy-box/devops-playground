@@ -18,8 +18,6 @@ Parameters:
 
 Mappings:
   AWSRegionToAMI:
-  # Ensure you supply a valid AWS Linux 2 ami in eu-west-2 
-  # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
     eu-west-2:
       AMIID: ami-0ff1c68c6e837b183 #ami-09abb6457c770f890  #ami-0f8f99aa5fa000138
 
@@ -48,13 +46,22 @@ Resources:
       ToPort: '22'
       CidrIp: 0.0.0.0/0
 
+  SecurityGroupSSHinbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      IpProtocol: tcp
+      FromPort: '8990'
+      ToPort: '8990'
+      CidrIp: 0.0.0.0/0
+
   AppSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !Ref SecurityGroup
       IpProtocol: tcp
-      FromPort: '31000'
-      ToPort: '61000'
+      FromPort: '3100'
+      ToPort: '6100'
       SourceSecurityGroupId: !Ref SecurityGroup
 
   ec2Instance: 

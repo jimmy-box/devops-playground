@@ -32,7 +32,10 @@ Create these environment variables in circleci
 
 Access the app using the ec2 instance DNS e. http://ec2-public-dns:8990/
 
+# Deploy manually
+
 To deploy the app manually simple run:
 
 - cd myproject
 - docker compose up -d
+- Access the app - localhost:8990

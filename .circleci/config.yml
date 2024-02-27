@@ -62,7 +62,6 @@ jobs:
             cd myproject
             chmod 757 deploy.sh
             ./deploy.sh
-            #sudo docker-compose up -d
 
 ## Commit to a branch
 commit: &only_commit
