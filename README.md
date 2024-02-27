@@ -31,3 +31,8 @@ Create these environment variables in circleci
 - Make a commit to the main branch to trigger the app deployment pipeline
 
 Access the app using the ec2 instance DNS e. http://ec2-public-dns:8990/
+
+To deploy the app manually simple run:
+
+- cd myproject
+- docker compose up -d
