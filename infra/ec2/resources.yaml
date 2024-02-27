@@ -77,14 +77,14 @@ Resources:
           Value: dev-instance
         - Key: Env
           Value: Dev
-      UserData:
-        Fn::Base64: 
-          !Sub |
-              #!/bin/bash -ex
-              apt update -y
-              apt  install docker.io
-              apt install git -y
-              apt install docker-compose
+      # UserData:
+      #   Fn::Base64: 
+      #     !Sub |
+      #         #!/bin/bash -ex
+      #         apt update -y
+      #         apt  install docker.io
+      #         apt install git -y
+      #         apt install docker-compose
 
 Outputs:
   Website:
