@@ -47,7 +47,7 @@ jobs:
             pwd 
             ls
             echo "I am attempting to copy"
-            scp -i ~/.ssh/id_rsa -oStrictHostKeyChecking=no -r /home/circleci/project/myproject  $EC2_USERNAME@$EC2_PUBLIC_DNS:/home/ubuntu
+            scp -i ~/.ssh/id_rsa -oStrictHostKeyChecking=no -r ~/myproject  $EC2_USERNAME@$EC2_PUBLIC_DNS:/home/ubuntu
             echo "Attempting ssh connection "
             ssh -i ~/.ssh/id_rsa -oStrictHostKeyChecking=no -v $EC2_USERNAME@$EC2_PUBLIC_DNS \
             echo "I am in the ubuntu server"
