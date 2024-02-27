@@ -88,13 +88,13 @@ workflows:
 #Dev infra
   deploy-infra:
     jobs:
-      - buld-and-test
+      - build-and-test
       - deploy-cfn:
           context: devops-playground-context
           <<: *only_infra_commit
           stack-name: ec2-infra-stack
           requires:
-            - buid-and-test
+            - build-and-test
 
 #Dev app
   deploy-application:
@@ -103,5 +103,5 @@ workflows:
           context: devops-playground-context
           <<: *only_commit
           equires:
-            - buid-and-test
+            - build-and-test
           
