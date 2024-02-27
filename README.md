@@ -19,7 +19,7 @@ Click on Projects > Set Up Project and follow the instructions
 
 Create these environment variables in circleci
 
-- EC2_PUBLIC_DNS
+- SSH_KEY
 - AWS_REGION
 - EC2_PUBLIC_DNS (from the instance created)
 
