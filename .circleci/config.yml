@@ -9,6 +9,7 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup
+      - run: pip install cfn-lint
       - run:
           name: validate CF template
           command: |
