@@ -4,6 +4,25 @@ orbs:
   aws-cli: circleci/aws-cli@1.4.0
 
 jobs:
+  build-and-test:
+    parameters:
+      stack-name:
+        description: Name of the CloudFormation stack
+        type: string
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run:
+          name: validate CF template
+          command: |
+            cfn-lin myproject/infra/ec2/resources.yaml
+      - run:
+          name: build app
+          command: |
+            cd myproject
+            docker-compose build
+    
   deploy-cfn:
     parameters:
       stack-name:
@@ -23,10 +42,6 @@ jobs:
             --no-fail-on-empty-changeset   
             
   deploy-app:
-    # parameters:
-    #   stack-name:
-    #     description: Name of the CloudFormation stack
-    #     type: string
     executor: aws-cli/default
     steps:
       - checkout
@@ -73,10 +88,13 @@ workflows:
 #Dev infra
   deploy-infra:
     jobs:
+      - buld-and-test
       - deploy-cfn:
           context: devops-playground-context
           <<: *only_infra_commit
           stack-name: ec2-infra-stack
+          requires:
+            - buid-and-test
 
 #Dev app
   deploy-application:
@@ -84,4 +102,6 @@ workflows:
       - deploy-app:
           context: devops-playground-context
           <<: *only_commit
+          equires:
+            - buid-and-test
           
