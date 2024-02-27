@@ -98,6 +98,6 @@ workflows:
       - deploy-app:
           context: devops-playground-context
           <<: *only_commit
-          equires:
+          requires:
             - build-and-test
           
